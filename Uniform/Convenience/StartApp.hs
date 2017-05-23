@@ -4,20 +4,18 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
- {-# OPTIONS -Wall #-}
+ -- {-# OPTIONS -Wall #-}
 
 
-module Uniform.Convenience.StartApp(startProg
---        , getAppConfigFile
+module Uniform.Convenience.StartApp(
+    module Uniform.Convenience.StartApp
+    , module Uniform.Error
+    , module Uniform.Strings
         )   where
 
 
 import           Uniform.Error
 import           Uniform.Strings
---import Uniform.FileIO
---import Test.Framework
-
---import Control.Applicative (Applicative(..), Applicative)
 
 
 startProg :: Show a => Text -> Text -> ErrIO a -> IO ()
@@ -33,23 +31,3 @@ startProg programName   progTitle mainProg = do  -- (mainProg prefsfilename glad
             putIOwords ["startProg error caught", programName, progTitle, showT e ] -- " showT msg])
             return ()
             )
-
-
-
---getAppConfigFile :: FilePath -> FilePath -> ErrIO FilePath
---getAppConfigFile programName prefsfilename =   do
---    appDataPath   <-   getAppConfigDirectory
---    putIOwords ["appDataPath is ",   appDataPath]
-----    let pref = prefsfileDir </> prefsfilename
-----    homeDir <- callIO $ getHomeDirectory
---    let prefdir = appDataPath </> programName
-----    writeFileCreateDir  prefdir programName  (""::String) -- (homeDir </> prefsfileDir)
---    writeFile2   (prefdir </> programName)  (""::String) -- (homeDir </> prefsfileDir)
---    let prefname = appDataPath </>  programName </>  prefsfilename
---    putIOwords ["pref file name is ",   prefname]
---    return prefname
-
-
---instance (Eq x) => Zeros x where
---    zero = (undefined $ "Zeros for this type not instantiated")
--- unsafe overlap -- when defined in other modules

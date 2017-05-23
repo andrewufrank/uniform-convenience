@@ -7,8 +7,10 @@
  {-# OPTIONS -Wall #-}
 
 
-module Uniform.Convenience.LitTypes(LanguageCode (..)
-        , parseLanguageCode
+module Uniform.Convenience.LitTypes(
+    module Uniform.Convenience.LitTypes
+    , module Uniform.Error
+    , module Uniform.Strings  
         )   where
 
 
@@ -26,4 +28,3 @@ parseLanguageCode "en" = English
 parseLanguageCode "xx" = NoLanguage
 parseLanguageCode "xxx" = NoLanguage
 parseLanguageCode c = errorT ["Extension.hs = parseLanguageCode ", c, "not found"]
-

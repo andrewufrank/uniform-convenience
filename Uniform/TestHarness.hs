@@ -86,11 +86,12 @@ testFile2File  startfile resfile op = do
             writeFile (toFilePath fnx )  (show tt1)
     assertBool testres
 
-testFile3File :: (Read a, Eq b, Show b, Read b, Zeros b) =>
+testVar3File :: (Read a, Eq b, Show b, Read b, Zeros b) =>
         base -> FilePath -> FilePath -> (base -> a->   b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
+-- with a variable as addiational arg for operation
 -- test of purecode
-testFile3File  base startfile resfile op = do
+testVar3File  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     f0 <- readFile (toFilePath fn0)
@@ -105,4 +106,30 @@ testFile3File  base startfile resfile op = do
     unless testres $
             writeFile (toFilePath fnx )  (show tt1)
     assertBool testres
+
+testVar3FileIO :: (Read a, Eq b, Show b, Read b, Zeros b) =>
+        base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
+-- ^ a text harness for the transformation of data in a file to another file
+-- with a variable as addiational arg for operation
+-- test of purecode
+testVar3FileIO  base startfile resfile op = do
+--    putIOwords ["read text for ", s2t . show $  textstate0]
+    let fn0 =  testDataDir   </> startfile :: Path Abs File
+    f0 <- readFile (toFilePath fn0)
+
+    t1 <-  runErr $ op base (readNote startfile f0)
+    case t1 of
+        Left msg -> do
+                    putIOwords ["test testVar3FileIO", s2t resfile]
+                    assertBool False
+        Right tt1 -> do
+                let fn = testDataDir </> (resfile) :: Path Abs File
+                let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
+                fnexist <- doesFileExist fn
+                f1 <- if fnexist then readFile  (toFilePath fn)
+                            else return zero
+                let testres = (readDef zero f1) == tt1
+                unless testres $
+                    writeFile (toFilePath fnx )  (show tt1)
+                assertBool testres
 

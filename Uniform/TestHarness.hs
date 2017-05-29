@@ -84,7 +84,7 @@ testFile2File  startfile resfile op = do
     let testres =  (readDef zero f1) == tt1
     unless testres $
             writeFile (toFilePath fnx )  (show tt1)
-    assertBool testres
+    assertEqual (readDef zero f1)   tt1
 
 testVar3File :: (Read a, Eq b, Show b, Read b, Zeros b) =>
         base -> FilePath -> FilePath -> (base -> a->   b) -> IO ()
@@ -105,7 +105,7 @@ testVar3File  base startfile resfile op = do
     let testres =  (readDef zero f1) == tt1
     unless testres $
             writeFile (toFilePath fnx )  (show tt1)
-    assertBool testres
+    assertEqual (readDef zero f1)   tt1
 
 testVar3FileIO :: (Read a, Eq b, Show b, Read b, Zeros b) =>
         base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
@@ -131,5 +131,5 @@ testVar3FileIO  base startfile resfile op = do
                 let testres = (readDef zero f1) == tt1
                 unless testres $
                     writeFile (toFilePath fnx )  (show tt1)
-                assertBool testres
+                assertEqual (readDef zero f1)   tt1
 

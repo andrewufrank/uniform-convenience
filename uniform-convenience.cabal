@@ -1,5 +1,5 @@
 name: uniform-convenience
-version: 0.0.9.19
+version: 0.0.9.21
 cabal-version: >=1.22
 build-type: Simple
 license: GPL
@@ -29,7 +29,7 @@ library
         , uniform-fileio
     exposed-modules:
         Uniform.Convenience.StartApp
-        Uniform.Convenience.LitTypes
+--        Uniform.Convenience.LitTypes
         Uniform.TestHarness
 
     exposed: True

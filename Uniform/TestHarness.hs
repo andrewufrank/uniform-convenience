@@ -43,16 +43,16 @@ import Uniform.Error
 
 --initializeTestDataDir :: ErrIO (Path Abs Dir)
 --initializeTestDataDir =   getAppUserDataDir "LitTextTest"
-
+testvardebug = False
 
 testVar2File :: (Zeros b, Eq b, Show b, Read b) => a -> FilePath -> (a-> ErrIO b) -> IO ()
 -- ^ a text harness for the case that the start is a value (not a file)
 testVar2File  a resfile op = do
-    putIOwords ["testVar2File read text for ", s2t resfile]
+    when testvardebug $ putIOwords ["testVar2File read text for ", s2t resfile]
     t1 <- runErr $  op a
     case t1 of
         Left msg -> do
-                    putIOwords ["test testVar2File", s2t resfile]
+                    when testvardebug $ putIOwords ["test testVar2File", s2t resfile]
                     assertBool False
         Right tt1 -> do
 --                    putIOwords ["the text result (for next) \n", showT tt1]
@@ -61,7 +61,7 @@ testVar2File  a resfile op = do
                 testDataDir <- getAppUserDataDir "LitTextTest"
                 let fn = testDataDir </> (resfile) :: Path Abs File
                 let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
-                putIOwords ["test testVar2File", s2t resfile, showT fn]
+                when testvardebug $ putIOwords ["test testVar2File", s2t resfile, showT fn]
                 fnexist <- doesFileExist fn
                 f1 <- if fnexist then readFile  (toFilePath fn)
                             else return zero
@@ -78,7 +78,7 @@ testFile2File  startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getAppUserDataDir "LitTextTest"
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    putIOwords ["test2a testFile2File", s2t resfile, showT fn0]
+    when testvardebug $ putIOwords ["test2a testFile2File", s2t resfile, showT fn0]
     f0 <- readFile (toFilePath fn0)
 
     let tt1 =  op (readNote startfile f0)
@@ -103,7 +103,7 @@ testVar3File  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getAppUserDataDir "LitTextTest"
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    putIOwords ["test3a testVar3File", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:", s2t resfile, "inputFile:", showT fn0]
     f0 <- readFile (toFilePath fn0)
 
     let tt1 =  op base (readNote startfile f0)
@@ -113,8 +113,8 @@ testVar3File  base startfile resfile op = do
     f1 <- if fnexist then readFile  (toFilePath fn)
                 else return zero
     let f1cont = readDef zero f1
-    putIOwords ["test3a exprected result (raw)", s2t f1]
-    putIOwords ["test3a exprected result (content)", show' f1cont]
+    when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
+    when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
     let testres =  f1cont == tt1
     unless testres $ do
             putIOwords ["test3a testVar3FileIO failed", show' tt1]
@@ -133,16 +133,16 @@ testVar3FileIO  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getAppUserDataDir "LitTextTest"
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    putIOwords ["test3 testVar3FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+    when testvardebug $ putIOwords ["test3 testVar3FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
     f0 <- readFile (toFilePath fn0)
 
     t1 <-  runErr $ op base (readNote startfile f0)
     case t1 of
         Left msg -> do
-                    putIOwords ["test3 Left testVar3FileIO", s2t resfile, showT f0, msg, "."]
+                    when testvardebug $ putIOwords ["test3 Left testVar3FileIO", s2t resfile, showT f0, msg, "."]
                     assertBool False
         Right tt1 -> do
-                putIOwords ["test3 Right testVar3FileIO", s2t resfile, showT f0, show' tt1, "."]
+                when testvardebug $ putIOwords ["test3 Right testVar3FileIO", s2t resfile, showT f0, show' tt1, "."]
                 let fn = testDataDir </> (resfile) :: Path Abs File
                 let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
                 fnexist <- doesFileExist fn

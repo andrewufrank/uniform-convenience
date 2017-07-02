@@ -133,13 +133,18 @@ testVar3FileIO  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getAppUserDataDir "LitTextTest"
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test3 testVar3FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+--    when testvardebug $
+    putIOwords ["test3 testVar3FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
     f0 <- readFile (toFilePath fn0)
 
     t1 <-  runErr $ op base (readNote startfile f0)
+    putIOwords ["test3 testVar3FileIO", "result", showT t1]
     case t1 of
         Left msg -> do
-                    when testvardebug $ putIOwords ["test3 Left testVar3FileIO", s2t resfile, showT f0, msg, "."]
+--                    when testvardebug $
+                    putIOwords ["test3 Left testVar3FileIO\n"
+--                                , s2t resfile, "\n", showT f0, "\n"
+                                , msg, "."]
                     assertBool False
         Right tt1 -> do
                 when testvardebug $ putIOwords ["test3 Right testVar3FileIO", s2t resfile, showT f0, show' tt1, "."]

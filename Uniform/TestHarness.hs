@@ -25,6 +25,8 @@
 
 
 module Uniform.TestHarness (module Uniform.TestHarness
+
+
 --    , module Uniform.Strings
     , module Uniform.Error
 --    , module Safe
@@ -46,7 +48,8 @@ import Uniform.TestHarnessUtilities.Utils
 --initializeTestDataDir =   getAppUserDataDir "LitTextTest"
 testvardebug = False
 
-testVar2File :: (Zeros b, Eq b, Show b, Read b) => a -> FilePath -> (a-> ErrIO b) -> IO ()
+testVar2File :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
+            => a -> FilePath -> (a-> ErrIO b) -> IO ()
 -- ^ a text harness for the case that the start is a value (not a file)
 testVar2File  a resfile op = do
     when testvardebug $ putIOwords ["testVar2File read text for ", s2t resfile]
@@ -73,7 +76,8 @@ testVar2File  a resfile op = do
 ----                assertBool testres
 --                assertEqual (readDef zero f1)  tt1
 
-testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b) => FilePath -> FilePath -> (a->   b) -> IO ()
+testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b)
+            => FilePath -> FilePath -> (a->   b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- test of purecode
 testFile2File  startfile resfile op = do
@@ -82,7 +86,7 @@ testFile2File  startfile resfile op = do
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when testvardebug $ putIOwords ["test2a testFile2File", s2t resfile, showT fn0]
     f0 <- readFile (toFilePath fn0)
-
+--    let f1 = removeChar '\n' f0
     let tt1 =  op (readNote startfile f0)
     checkResult testvardebug testDataDir resfile tt1
 --    let fn = testDataDir </> resfile  :: Path Abs File
@@ -97,7 +101,7 @@ testFile2File  startfile resfile op = do
 --    assertEqual (readDef zero f1)  tt1
 ----    assertBool testres
 
-testVar3File :: (CharChains2 b Text, Read a, Eq b, Show b, Read b, Zeros b) =>
+testVar3File :: (CharChains2 b Text, Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a->   b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
@@ -128,7 +132,8 @@ testVar3File  base startfile resfile op = do
 --    assertEqual f1cont  tt1
 --    assertBool testres
 
-testVar3FileIO :: (CharChains2 b Text, Read a, Eq b, Show b, Read b, Zeros b) =>
+testVar3FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
+                    , Read b, Zeros b, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation

@@ -80,6 +80,7 @@ instance Show t => ShowTestHarness [t] where
         showTestH2 t =  show t ++ ",\n"
 
 instance  ShowTestHarness Text where
+instance  ShowTestHarness () where
 
 --instance  ShowTestHarness t where
 --    showTestH tx@(a:as)= show tx

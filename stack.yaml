@@ -7,4 +7,4 @@ packages:
 - ../uniform-algebras
 - ../uniform-fileio
 extra-deps:
-resolver: lts-8.15
+resolver: lts-9.1

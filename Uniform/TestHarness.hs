@@ -152,6 +152,7 @@ testVar3FileIO  base startfile resfile op = do
         Left msg -> do
 --                    when testvardebug $
                     putIOwords ["test3 Left testVar3FileIO\n"
+                     , "possibly only the rest file not existing - create by hand"
 --                                , s2t resfile, "\n", showT f0, "\n"
                                 , msg, "."]
                     assertBool False

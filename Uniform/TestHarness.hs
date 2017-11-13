@@ -25,13 +25,7 @@
 
 
 module Uniform.TestHarness (module Uniform.TestHarness
-
-
---    , module Uniform.Strings
     , module Uniform.Error
---    , module Safe
---    , module Control.Monad.Error  -- is monads-tf
---    , module Control.Exception   -- to avoid control.error
     , module Test.Framework
 
         )  where
@@ -64,17 +58,6 @@ testVar2File  a resfile op = do
 --                    assertEqual result1B tt1
                 testDataDir <- getAppUserDataDir "LitTextTest"
                 checkResult testvardebug testDataDir resfile tt1
---                let fn = testDataDir </> (resfile) :: Path Abs File
---                let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
---                when testvardebug $ putIOwords ["test testVar2File", s2t resfile, showT fn]
---                fnexist <- doesFileExist fn
---                f1 <- if fnexist then readFile  (toFilePath fn)
---                            else return zero
---                let testres = (readDef zero f1) == tt1
---                unless testres $
---                    writeFile (toFilePath fnx )  (show tt1)
-----                assertBool testres
---                assertEqual (readDef zero f1)  tt1
 
 testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b)
             => FilePath -> FilePath -> (a->   b) -> IO ()
@@ -89,17 +72,6 @@ testFile2File  startfile resfile op = do
 --    let f1 = removeChar '\n' f0
     let tt1 =  op (readNote startfile f0)
     checkResult testvardebug testDataDir resfile tt1
---    let fn = testDataDir </> resfile  :: Path Abs File
---    let fnx = testDataDir </> ("x" ++ resfile ) :: Path Abs File
---    fnexist <- doesFileExist fn
---    f1 <- if fnexist then readFile  (toFilePath fn)
---                else return zero
---    let testres =  (readDef zero f1) == tt1
---    unless testres $
---            writeFile (toFilePath fnx )  (show tt1)
---            -- must use show, not show'
---    assertEqual (readDef zero f1)  tt1
-----    assertBool testres
 
 testVar3File :: (CharChains2 b Text, Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a->   b) -> IO ()
@@ -115,22 +87,33 @@ testVar3File  base startfile resfile op = do
 
     let tt1 =  op base (readNote startfile f0)
     checkResult testvardebug testDataDir resfile tt1
---    let fn = testDataDir </> resfile  :: Path Abs File
---    let fnx = testDataDir </> ("x" ++ resfile ) :: Path Abs File
---    fnexist <- doesFileExist fn
---    f1 <- if fnexist then readFile  (toFilePath fn)
---                else return zero
---    let f1cont = readDef zero f1
---    when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
---    when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
---    let testres =  f1cont == tt1
---    unless testres $ do
---            putIOwords ["test3a testVar3FileIO failed", show' tt1]
---            putIOwords ["test3a testVar3FileIO expected file", show' fn, "contains", showT f1]
---            writeFile (toFilePath fnx )  (show  tt1)
---            -- must use show, not show'
---    assertEqual f1cont  tt1
---    assertBool testres
+
+testVar2FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
+                    , Read b, Zeros b, ShowTestHarness b) =>
+         FilePath -> FilePath -> (  a-> ErrIO  b) -> IO ()
+-- ^ a text harness for the transformation of data in a file to another file
+-- with a variable as addiational arg for operation
+-- test of purecode
+testVar2FileIO   startfile resfile op = do
+--    putIOwords ["read text for ", s2t . show $  textstate0]
+    testDataDir <- getAppUserDataDir "LitTextTest"
+    let fn0 =  testDataDir   </> startfile :: Path Abs File
+--    when testvardebug $
+    putIOwords ["test3 testVar2FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+    f0 <- readFile (toFilePath fn0)
+
+    t1 <- runErr $ op   (readNote startfile f0)
+    putIOwords ["test3 testVar2FileIO", "result", showT t1]
+    case t1 of
+        Left msg -> do
+--                    when testvardebug $
+                    putIOwords ["test3 Left testVar2FileIO\n"
+                     , "possibly only the rest file not existing - create by hand"
+--                                , s2t resfile, "\n", showT f0, "\n"
+                                , msg, "."]
+                    assertBool False
+        Right tt1 -> do
+                checkResult testvardebug testDataDir resfile tt1
 
 testVar3FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness b) =>
@@ -158,16 +141,3 @@ testVar3FileIO  base startfile resfile op = do
                     assertBool False
         Right tt1 -> do
                 checkResult testvardebug testDataDir resfile tt1
---                when testvardebug $ putIOwords ["test3 Right testVar3FileIO", s2t resfile, showT f0, show' tt1, "."]
---                let fn = testDataDir </> (resfile) :: Path Abs File
---                let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
---                fnexist <- doesFileExist fn
---                f1 <- if fnexist then readFile  (toFilePath fn)
---                            else return zero
---                let testres = (readDef zero f1) == tt1
---                unless testres $ do
---                    putIOwords ["test3 testVar3FileIO failed", show' tt1]
---                    writeFile (toFilePath fnx )  (show  $  tt1)
---            -- must use show, not show'
---                assertEqual (readDef zero f1)  tt1
-----                assertBool testres

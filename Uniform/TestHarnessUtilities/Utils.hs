@@ -42,7 +42,8 @@ checkResult :: (Zeros b, Eq b, Show b, Read b, Zeros b, ShowTestHarness b)
 checkResult testvardebug testDataDir resfile tt1 = do
         let fn = testDataDir </> resfile :: Path Abs File
         let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
-        when testvardebug $ putIOwords ["test testVar2File", s2t resfile, showT fn]
+        when testvardebug $
+            putIOwords ["checkResult test testVar2File", s2t resfile, showT fn]
         fnexist <- doesFileExist fn
         let result = showTestH tt1
         if fnexist
@@ -53,9 +54,10 @@ checkResult testvardebug testDataDir resfile tt1 = do
         --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
 --                let testres = (readDef zero f1) == result
                 let testres = f1 == result
-                unless (testres && testvardebug) $ do
-                        putIOwords ["test3a testVar3FileIO ", showT testres, "\n", showT result]
-                        putIOwords ["test3a testVar3FileIO expected file"
+--                unless (testres && testvardebug) $ do
+                when testvardebug  $ do
+                        putIOwords ["checkResult test3a testVar3FileIO ", showT testres, "\n", showT result]
+                        putIOwords ["checkResult test3a testVar3FileIO expected file"
                                         , show' fn, "contains\n", showT f1]
                 unless testres $
                     writeFile (toFilePath fnx )  result

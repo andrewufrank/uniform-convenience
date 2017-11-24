@@ -52,7 +52,6 @@ checkResult testvardebug testDataDir resfile tt1 = do
         --        let f1cont = readDef zero f1
         --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
         --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
---                let testres = (readDef zero f1) == result
                 let testres = f1 == result
 --                unless (testres && testvardebug) $ do
                 when testvardebug  $ do
@@ -62,7 +61,7 @@ checkResult testvardebug testDataDir resfile tt1 = do
                 unless testres $
                     writeFile (toFilePath fnx )  result
                 assertBool testres
-                assertEqual f1  result
+--                assertEqual f1  result
             else do
                 writeFile (toFilePath fn )  result
                 assertBool True  -- no control, assume ok

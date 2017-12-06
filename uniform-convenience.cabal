@@ -27,9 +27,11 @@ library
         , uniform-error
         , uniform-algebras
         , uniform-fileio
+        , csv
+        , parsec
     exposed-modules:
         Uniform.Convenience.StartApp
---        Uniform.Convenience.LitTypes
+        Uniform.Convenience.ReadCSV
         Uniform.TestHarness
         Uniform.TestHarnessUtilities.Utils
 

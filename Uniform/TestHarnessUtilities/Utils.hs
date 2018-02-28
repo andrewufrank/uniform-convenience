@@ -46,9 +46,11 @@ checkResult testvardebug testDataDir resfile tt1 = do
             putIOwords ["checkResult test testVar2File", s2t resfile, showT fn]
         fnexist <- doesFileExist fn
         let result = showTestH tt1
-        if fnexist
+        f1 <- if fnexist
+            then  readFile  (toFilePath fn)
+            else  return ""
+        if not . null' $ f1
             then do
-                f1 <- readFile  (toFilePath fn)
         --        let f1cont = readDef zero f1
         --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
         --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
@@ -73,6 +75,8 @@ checkResult testvardebug testDataDir resfile tt1 = do
 class ShowTestHarness t where
     showTestH :: Show t =>  t -> String
     showTestH = show
+    readTestH :: Read t => String -> t
+    readTestH = readNote "showTestHarness t"
 
 instance Show t => ShowTestHarness [t] where
     showTestH t@(a:as) = concat (["["] ++  map showTestH2 (init t) ++ [show (last t), "]"])
@@ -81,10 +85,18 @@ instance Show t => ShowTestHarness [t] where
         showTestH2 t =  show t ++ ",\n"
 
 instance  ShowTestHarness Text where
+    -- to avoid the additional "" added when show text
+    showTestH = t2s
+    readTestH = readNote "showTestHarness Text" . show
+instance  ShowTestHarness String where
+    -- to avoid the additional "" added when show text
+    showTestH = id
+    readTestH = readNote "showTestHarness String ". show
+
 instance  ShowTestHarness () where
 
 --instance  ShowTestHarness t where
---    showTestH tx@(a:as)= show tx
---    showTestH tx = show tx
+----    showTestH tx@(a:as)= show tx
+----    showTestH tx = show tx
 
 

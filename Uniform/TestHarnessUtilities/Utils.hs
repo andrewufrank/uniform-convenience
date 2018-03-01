@@ -88,6 +88,8 @@ class ShowTestHarness t where
     showTestH = show
     readTestH :: Read t => String -> t
     readTestH = readNote "showTestHarness t"
+    readTestH2 :: Read t => String -> String -> t
+    readTestH2 msg = readNote msg
 
 instance Show t => ShowTestHarness [t] where
     showTestH t@(a:as) = concat (["["] ++  map showTestH2 (init t) ++ [show (last t), "]"])
@@ -99,10 +101,12 @@ instance  ShowTestHarness Text where
     -- to avoid the additional "" added when show text
     showTestH = t2s
     readTestH = readNote "showTestHarness Text" . show
+    readTestH2 msg = readNote (  msg) . show
 instance  ShowTestHarness String where
     -- to avoid the additional "" added when show text
     showTestH = id
     readTestH = readNote "showTestHarness String ". show
+    readTestH2 msg = readNote (  msg) . show
 
 instance  ShowTestHarness () where
 

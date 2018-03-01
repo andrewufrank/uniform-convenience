@@ -81,7 +81,7 @@ testFile2File  startfile resfile op = do
     checkResult testvardebug testDataDir resfile tt1
 
 testVar3File :: (Read a, Eq b, Show b, Read b
-            , Zeros b, ShowTestHarness b) =>
+            , Zeros b, ShowTestHarness a, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a->   b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
@@ -90,13 +90,15 @@ testVar3File  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:"
+                , s2t resfile, "inputFile:", showT fn0]
     f0 <- readFile (toFilePath fn0)
 
-    let tt1 =  op base (readNote startfile f0)
+    let tt1 =  op base (readTestH2 startfile f0)
     checkResult testvardebug testDataDir resfile tt1
 
-test3File :: (CharChains2 b Text, Read base, Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b) =>
+test3File :: (Read base, Read a, Eq b, Show b, Read b, Zeros b
+            , ShowTestHarness base, ShowTestHarness a, ShowTestHarness b) =>
         FilePath -> FilePath -> FilePath -> (base -> a->   b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
@@ -106,16 +108,17 @@ test3File  basefile startfile resfile op = do
     testDataDir <- getLitTextTestDir
     let fbase = testDataDir </> basefile :: Path Abs File
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:"
+                , s2t resfile, "inputFile:", showT fn0]
     base0 <- readFile (toFilePath fbase)
-    let base = readNote "test3file readbase wer2" $ base0
+    let base = readTestH2 "test3file readbase wer2" $ base0
     f0 <- readFile (toFilePath fn0)
 
-    let tt1 =  op base (readNote startfile f0)
+    let tt1 =  op base (readTestH2 startfile f0)
     checkResult testvardebug testDataDir resfile tt1
 
-testVar2FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
-                    , Read b, Zeros b, ShowTestHarness b) =>
+testVar2FileIO :: (Read a, Eq b, Show b
+                    , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
          FilePath -> FilePath -> (  a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
@@ -125,10 +128,11 @@ testVar2FileIO   startfile resfile op = do
     testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when True $ -- testvardebug $
-        putIOwords ["test3 testVar2FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
+        putIOwords ["test3 testVar2FileIO", "resultFile:", s2t resfile
+                , "inputFile:", showT fn0]
     f0 <- readFile (toFilePath fn0)
 
-    t1 <- runErr $ op   (readNote startfile f0)
+    t1 <- runErr $ op   (readTestH2 startfile f0)
     putIOwords ["test3 testVar2FileIO", "result", showT t1]
     case t1 of
         Left msg -> do
@@ -141,8 +145,8 @@ testVar2FileIO   startfile resfile op = do
         Right tt1 -> do
                 checkResult testvardebug testDataDir resfile tt1
 
-testVar3FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
-                    , Read b, Zeros b, ShowTestHarness b) =>
+testVar3FileIO :: (Read a, Eq b, Show b
+                    , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
@@ -157,9 +161,9 @@ testVar3FileIO  base startfile resfile op = do
     f0 <- readFile (toFilePath fn0)
     putIOwords ["test3 testVar3FileIO A", "resultFile:", s2t resfile, "inputFile:", showT fn0]
 
-    t1 <-  runErr $ op base (readNote startfile f0)
+    t1 <-  runErr $ op base (readTestH2 startfile f0)
     when True $ -- testvardebug $
-        putIOwords ["test3 testVar3FileIO B", "result", showT t1]
+        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
     case t1 of
         Left msg -> do
 --                    when testvardebug $
@@ -173,5 +177,6 @@ testVar3FileIO  base startfile resfile op = do
                 r <- checkResult testvardebug testDataDir resfile tt1
                 putIOwords ["test3 testVar3FileIO C check result gives", showT r ]
                 return r
+
 
 

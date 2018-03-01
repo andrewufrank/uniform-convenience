@@ -41,6 +41,8 @@ import           Test.Framework
 import Uniform.FileIO
 import Uniform.Error
 import Uniform.TestHarnessUtilities.Utils
+--import qualified Path.IO as Path.IO (getAppUserDataDir)
+        -- necessary for operations in IO
 
 --initializeTestDataDir :: ErrIO (Path Abs Dir)
 --initializeTestDataDir =   getAppUserDataDir "LitTextTest"
@@ -60,7 +62,7 @@ testVar2File  a resfile op = do
 --                    putIOwords ["the text result (for next) \n", showT tt1]
 --                    putIOwords ["the text result   \n",   tt1]
 --                    assertEqual result1B tt1
-                testDataDir <- getAppUserDataDir "LitTextTest"
+                testDataDir <- getLitTextTestDir
                 checkResult testvardebug testDataDir resfile tt1
 
 testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b, ShowTestHarness a)
@@ -69,7 +71,7 @@ testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b, Show
 -- test of purecode
 testFile2File  startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
-    testDataDir <- getAppUserDataDir "LitTextTest"
+    testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when testvardebug $ putIOwords ["test2a testFile2File filenames start, result"
             , s2t resfile, showT fn0]
@@ -86,7 +88,7 @@ testVar3File :: (Read a, Eq b, Show b, Read b
 -- test of purecode
 testVar3File  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
-    testDataDir <- getAppUserDataDir "LitTextTest"
+    testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:", s2t resfile, "inputFile:", showT fn0]
     f0 <- readFile (toFilePath fn0)
@@ -101,7 +103,7 @@ test3File :: (CharChains2 b Text, Read base, Read a, Eq b, Show b, Read b, Zeros
 -- test of purecode
 test3File  basefile startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
-    testDataDir <- getAppUserDataDir "LitTextTest"
+    testDataDir <- getLitTextTestDir
     let fbase = testDataDir </> basefile :: Path Abs File
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:", s2t resfile, "inputFile:", showT fn0]
@@ -120,7 +122,7 @@ testVar2FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
 -- test of purecode
 testVar2FileIO   startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
-    testDataDir <- getAppUserDataDir "LitTextTest"
+    testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when True $ -- testvardebug $
         putIOwords ["test3 testVar2FileIO", "resultFile:", s2t resfile, "inputFile:", showT fn0]
@@ -147,7 +149,7 @@ testVar3FileIO :: (CharChains2 b Text, Read a, Eq b, Show b
 -- test of purecode
 testVar3FileIO  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
-    testDataDir <- getAppUserDataDir "LitTextTest"
+    testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
 --    when testvardebug $
     when True $ -- testvardebug $

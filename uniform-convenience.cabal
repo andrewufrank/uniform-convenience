@@ -29,6 +29,7 @@ library
         , uniform-fileio
         , csv
         , parsec
+        , path, path-io
     exposed-modules:
         Uniform.Convenience.StartApp
         Uniform.Convenience.ReadCSV

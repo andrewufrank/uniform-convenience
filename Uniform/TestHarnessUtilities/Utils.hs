@@ -4,6 +4,7 @@
 --
 -- | two functions to deal wtih tests which
 -- store data on disk
+ -- interface must be in the wrapped Path, to allow the reading ??
 -----------------------------------------------------------------------------
 {-# OPTIONS_GHC -F -pgmF htfpp #-}
 {-# LANGUAGE BangPatterns          #-}
@@ -36,15 +37,25 @@ import           Test.Framework
 import           Uniform.Strings hiding ((</>), (<.>), (<|>))
 import Uniform.FileIO
 import Uniform.Error
+--import qualified Path  as Path  (Path (..))
+import qualified Path.IO as Path.IO (doesFileExist, getAppUserDataDir)
+        -- necessary for operations in IO
+
+-- operations are in IO not ErrIO, therefore here and not in fileio
+getLitTextTestDir :: IO (Path Abs Dir)
+getLitTextTestDir = fmap Path $ Path.IO.getAppUserDataDir "LitTextTest"
+
+doesFileExistWrapped :: Path Abs File -> IO Bool
+doesFileExistWrapped fn = Path.IO.doesFileExist (unPath fn)
 
 checkResult :: (Zeros b, Eq b, Show b, Read b, Zeros b, ShowTestHarness b)
-            => Bool -> Path Abs Dir -> FilePath -> b -> IO ()
+            => Bool ->  Path Abs Dir -> FilePath -> b -> IO ()
 checkResult testvardebug testDataDir resfile tt1 = do
         let fn = testDataDir </> resfile :: Path Abs File
         let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
         when testvardebug $
             putIOwords ["checkResult test testVar2File", s2t resfile, showT fn]
-        fnexist <- doesFileExist fn
+        fnexist <- doesFileExistWrapped fn
         let result = showTestH tt1
         f1 <- if fnexist
             then  readFile  (toFilePath fn)

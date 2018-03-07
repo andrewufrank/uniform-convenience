@@ -23,9 +23,9 @@ library
         , safe
         , HTF
 --        , uniform-fileio
-            , uniform-strings
+--            , uniform-strings
         , uniform-error
-        , uniform-algebras
+--        , uniform-algebras
         , uniform-fileio
         , csv
         , parsec

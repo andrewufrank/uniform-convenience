@@ -10,12 +10,12 @@
 module Uniform.Convenience.StartApp(
     module Uniform.Convenience.StartApp
     , module Uniform.Error
-    , module Uniform.Strings
+--    , module Uniform.Strings
         )   where
 
 
 import           Uniform.Error
-import           Uniform.Strings
+--import           Uniform.Strings
 
 
 startProg :: Show a => Text -> Text -> ErrIO a -> IO ()

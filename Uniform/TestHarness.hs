@@ -31,6 +31,7 @@ module Uniform.TestHarness (module Uniform.TestHarness
     , module Uniform.Error
     , module Test.Framework
     , ShowTestHarness (..)
+    , FilePath
 
         )  where
 
@@ -39,7 +40,7 @@ import           Safe
 import           Test.Framework
 --import           Uniform.Strings hiding ((</>), (<.>), (<|>))
 import Uniform.FileIO
-import Uniform.Error
+import Uniform.Error  hiding ((</>), (<.>)) -- to allow export
 import Uniform.TestHarnessUtilities.Utils
 --import qualified Path.IO as Path.IO (getAppUserDataDir)
         -- necessary for operations in IO

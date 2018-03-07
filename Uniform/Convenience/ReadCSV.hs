@@ -16,8 +16,8 @@ module Uniform.Convenience.ReadCSV -- (closedMain)
     where
 
 import           Test.Framework
-import Uniform.Strings
-import Uniform.Error
+--import Uniform.Strings
+--import Uniform.Error
 import Text.CSV
 import Text.Parsec.Error
 import Uniform.FileIO

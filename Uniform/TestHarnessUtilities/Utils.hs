@@ -34,9 +34,9 @@ module Uniform.TestHarnessUtilities.Utils (module Uniform.TestHarnessUtilities.U
 --import           "monads-tf" Control.Monad.Error
 import           Safe
 import           Test.Framework
-import           Uniform.Strings hiding ((</>), (<.>), (<|>))
+--import           Uniform.Strings hiding ((</>), (<.>), (<|>))
 import Uniform.FileIO
-import Uniform.Error
+--import Uniform.Error
 --import qualified Path  as Path  (Path (..))
 import qualified Path.IO as Path.IO (doesFileExist, getAppUserDataDir)
         -- necessary for operations in IO

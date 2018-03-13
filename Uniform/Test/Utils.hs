@@ -25,7 +25,7 @@
 {-# OPTIONS_GHC -w #-}
 
 
-module Uniform.TestHarnessUtilities.Utils (module Uniform.TestHarnessUtilities.Utils
+module Uniform.Test.Utils (module Uniform.Test.Utils
     , module Uniform.FileIO
 
 
@@ -54,50 +54,58 @@ checkResult testvardebug testDataDir resfile tt1 = do
         let fn = testDataDir </> resfile :: Path Abs File
         let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
         when testvardebug $
-            putIOwords ["checkResult test testVar2File", s2t resfile, showT fn]
+            putIOwords ["checkResult test", s2t resfile, showT fn]
         fnexist <- doesFileExistWrapped fn
-        let result = showTestH tt1
-        f1 <- if fnexist
-            then  readFile  (toFilePath fn)
-            else  return ""
-        if not . null' $ f1
+--        let result = showTestH tt1
+        if fnexist
             then do
-        --        let f1cont = readDef zero f1
-        --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
-        --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
-                let testres = f1 == result
---                unless (testres && testvardebug) $ do
+                r0 :: String <- readFile  (toFilePath fn)
+                let r1 = (readTestH2 "checkResult read result file" r0) `asTypeOf` tt1
+                when True $ -- testvardebug $
+                    putIOwords ["test3 checkResult resultFile:", s2t resfile
+                    , "\ninputFile content read\n", showT r1]
+
+                --        let f1cont = readDef zero f1
+                --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
+                --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
+                let testres = r1 == tt1
+                --                unless (testres && testvardebug) $ do
                 when testvardebug  $ do
-                        putIOwords ["checkResult test3a testVar3FileIO "
-                                , showT testres, "\n", showT result]
-                        putIOwords ["checkResult test3a testVar3FileIO expected file"
-                                        , show' fn, "contains\n", showT f1]
-                unless testres $
-                    writeFile (toFilePath fnx )  result
+                    putIOwords ["checkResult test3a  "
+                            , showT testres, "\n", showT tt1]
+                    putIOwords ["checkResult test3a  expected file"
+                                    , show' fn, "contains\n", showT r1]
+                unless testres $ do
+                    when testvardebug  $ do
+                        putIOwords ["checkResult test4  - no previous file existing"
+                            , " - write NEW result"
+                                , showT testres, "\n", showT tt1]
+                    writeFile (toFilePath fnx )  $ showTestH tt1
                 assertBool testres
---                assertEqual f1  result
             else do
-                writeFile (toFilePath fn )  result
+                writeFile (toFilePath fn )  $ showTestH tt1
                 assertBool True  -- no control, assume ok
                     -- when file does not exist, then write it
+----            else  return zero
+----        if not . null' $ f1
+----            then do
 --        let f1cont = readDef zero f1
 --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
 --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
 
 class ShowTestHarness t where
     showTestH :: Show t =>  t -> String
-    showTestH = show
+--    showTestH = showTestH
     readTestH :: Read t => String -> t
     -- all reads from file are with readTestH2
     readTestH = readNote "showTestHarness t"
     readTestH2 :: Read t => String -> String -> t
     readTestH2 msg = readNote msg
 
-instance Show t => ShowTestHarness [t] where
-    showTestH t@(a:as) = concat (["["] ++  map showTestH2 (init t) ++ [show (last t), "]"])
+instance (Show t , ShowTestHarness t) => ShowTestHarness [t] where
 
-      where
-        showTestH2 t =  show t ++ ",\n"
+    showTestH t =  "\n" ++ (concat $  map showTestH t)
+
 
 instance  ShowTestHarness Text where
     -- to avoid the additional "" added when show text
@@ -111,6 +119,14 @@ instance  ShowTestHarness String where
     readTestH2 msg = readNote (  msg) . show
 
 instance  ShowTestHarness () where
+    showTestH = show
+    readTestH = readNote "showTestHarness bottom () ". show
+    readTestH2 msg = readNote (  msg) . show
+
+instance ShowTestHarness Int where
+    showTestH = show
+    readTestH = readNote "showTestHarness Int ". show
+    readTestH2 msg = readNote (  msg) . show
 
 --instance  ShowTestHarness t where
 ----    showTestH tx@(a:as)= show tx

@@ -7,7 +7,7 @@
 
 -- attention: the test result throws an exception HUnit.NN (caused by assertBool)
 
------------------------------------------------------------------------------
+-----------------------------------------------------------Utils.hs------------------
 {-# OPTIONS_GHC -F -pgmF htfpp #-}
 {-# LANGUAGE BangPatterns          #-}
 --{-# LANGUAGE DeriveDataTypeable    #-}
@@ -27,7 +27,7 @@
 {-# OPTIONS_GHC -w #-}
 
 
-module Uniform.TestHarness (module Uniform.TestHarness
+module Uniform.Test.TestHarness (module Uniform.Test.TestHarness
     , module Uniform.Error
     , module Test.Framework
     , ShowTestHarness (..)
@@ -41,7 +41,7 @@ import           Test.Framework
 --import           Uniform.Strings hiding ((</>), (<.>), (<|>))
 import Uniform.FileIO
 import Uniform.Error  hiding ((</>), (<.>)) -- to allow export
-import Uniform.TestHarnessUtilities.Utils
+import Uniform.Test.Utils
 --import qualified Path.IO as Path.IO (getAppUserDataDir)
         -- necessary for operations in IO
 

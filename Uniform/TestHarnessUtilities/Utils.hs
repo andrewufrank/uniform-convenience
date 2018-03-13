@@ -48,7 +48,7 @@ getLitTextTestDir = fmap Path $ Path.IO.getAppUserDataDir "LitTextTest"
 doesFileExistWrapped :: Path Abs File -> IO Bool
 doesFileExistWrapped fn = Path.IO.doesFileExist (unPath fn)
 
-checkResult :: (Zeros b, Eq b, Show b, Read b, Zeros b, ShowTestHarness b)
+checkResult :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
             => Bool ->  Path Abs Dir -> FilePath -> b -> IO ()
 checkResult testvardebug testDataDir resfile tt1 = do
         let fn = testDataDir </> resfile :: Path Abs File
@@ -68,7 +68,8 @@ checkResult testvardebug testDataDir resfile tt1 = do
                 let testres = f1 == result
 --                unless (testres && testvardebug) $ do
                 when testvardebug  $ do
-                        putIOwords ["checkResult test3a testVar3FileIO ", showT testres, "\n", showT result]
+                        putIOwords ["checkResult test3a testVar3FileIO "
+                                , showT testres, "\n", showT result]
                         putIOwords ["checkResult test3a testVar3FileIO expected file"
                                         , show' fn, "contains\n", showT f1]
                 unless testres $
@@ -87,6 +88,7 @@ class ShowTestHarness t where
     showTestH :: Show t =>  t -> String
     showTestH = show
     readTestH :: Read t => String -> t
+    -- all reads from file are with readTestH2
     readTestH = readNote "showTestHarness t"
     readTestH2 :: Read t => String -> String -> t
     readTestH2 msg = readNote msg

@@ -49,15 +49,15 @@ import Uniform.TestHarnessUtilities.Utils
 --initializeTestDataDir =   getAppUserDataDir "LitTextTest"
 testvardebug = True -- False
 
-testVar2File :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
+testVar1File :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
             => a -> FilePath -> (a-> ErrIO b) -> IO ()
 -- ^ a text harness for the case that the start is a value (not a file)
-testVar2File  a resfile op = do
-    when testvardebug $ putIOwords ["testVar2File read text for ", s2t resfile]
+testVar1File  a resfile op = do
+    when testvardebug $ putIOwords ["testVar1File read text for ", s2t resfile]
     t1 <- runErr $  op a
     case t1 of
         Left msg -> do
-                    when testvardebug $ putIOwords ["test testVar2File", s2t resfile]
+                    when testvardebug $ putIOwords ["test testVar1File", s2t resfile]
                     assertBool False
         Right tt1 -> do
 --                    putIOwords ["the text result (for next) \n", showT tt1]
@@ -74,8 +74,8 @@ testFile2File  startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test2a testFile2File filenames start, result"
-            , s2t resfile, showT fn0]
+    when testvardebug $ putIOwords ["test2a testFile2File filenames start ", showT fn0
+            , "result file", s2t resfile]
     f0 :: String <- readFile (toFilePath fn0)
 --    let f1 = removeChar '\n' f0
     let tt1 =  op    (readTestH $ f0)  -- this is just a conversion to type a
@@ -91,8 +91,8 @@ testVar3File  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:"
-                , s2t resfile, "inputFile:", showT fn0]
+    when testvardebug $ putIOwords ["test2a testVar3File filenames start ", showT fn0
+            , "result file", s2t resfile]
     f0 <- readFile (toFilePath fn0)
 
     let tt1 =  op base (readTestH2 startfile f0)
@@ -109,8 +109,8 @@ test3File  basefile startfile resfile op = do
     testDataDir <- getLitTextTestDir
     let fbase = testDataDir </> basefile :: Path Abs File
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test3a testVar3File", "resultFile:"
-                , s2t resfile, "inputFile:", showT fn0]
+    when testvardebug $ putIOwords ["test2a testVar3File filenames start ", showT fn0
+            , "result file", s2t resfile]
     base0 <- readFile (toFilePath fbase)
     let base = readTestH2 "test3file readbase wer2" $ base0
     f0 <- readFile (toFilePath fn0)
@@ -118,13 +118,13 @@ test3File  basefile startfile resfile op = do
     let tt1 =  op base (readTestH2 startfile f0)
     checkResult testvardebug testDataDir resfile tt1
 
-testVar2FileIO :: (Read a, Eq b, Show b
+test2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
          FilePath -> FilePath -> (  a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
 -- test of purecode
-testVar2FileIO   startfile resfile op = do
+test2FileIO   startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File
@@ -146,13 +146,13 @@ testVar2FileIO   startfile resfile op = do
         Right tt1 -> do
                 checkResult testvardebug testDataDir resfile tt1
 
-testVar3FileIO :: (Read a, Eq b, Show b
+testVar2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
 -- test of purecode
-testVar3FileIO  base startfile resfile op = do
+testVar2FileIO  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     let fn0 =  testDataDir   </> startfile :: Path Abs File

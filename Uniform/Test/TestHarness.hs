@@ -104,12 +104,12 @@ test3File  basefile startfile resfile op = do
 
 test2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
-         FilePath -> FilePath -> (  a-> ErrIO  b) -> IO ()
+          FilePath -> FilePath -> (  a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- with a variable as addiational arg for operation
 -- test of purecode
 test2FileIO   startfile resfile op = do
---    putIOwords ["read text for ", s2t . show $  textstate0]
+    putIOwords ["read text for ", s2t startfile]
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 

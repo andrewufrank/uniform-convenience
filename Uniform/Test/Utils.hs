@@ -91,7 +91,9 @@ checkResult testvardebug testDataDir resfile tt1 = do
                 r0 :: String <- readFile  (toFilePath fn)
                 if null' r0
                   then  do
+                    putIOwords ["checkResult t9 file exists but is null", showT fn]
                     writeFile (toFilePath fn )  $ showTestH tt1
+                    putIOwords ["checkResult t10 file written", s2t . take 100 $ showTestH tt1]
                     assertBool True  -- no control, assume ok
                   else do
                     let r1 = (readTestH2 "checkResult read result file" r0) `asTypeOf` tt1
@@ -142,17 +144,19 @@ class ShowTestHarness t where
 --    showTestH t =   ppShow t
 
 
---instance  ShowTestHarness Text where
---    -- to avoid the additional "" added when show text
---    showTestH = t2s
---    readTestH = readNote "showTestHarness Text" -- . show
-----    readTestH2 msg = readNote (  msg) . show
+instance  ShowTestHarness Text where
+    -- to avoid the additional "" added when show text
+    -- but the read must compensate!
+    -- this is necessary that json files (and other with "") can be read
+    showTestH = t2s
+    readTestH = readNote "showTestHarness Text" . show
+--    readTestH2 msg = readNote (  msg) . show
 --
---instance  ShowTestHarness String where
---    -- to avoid the additional "" added when show text
---    showTestH = id
---    readTestH = readNote "showTestHarness String " -- . show
-----    readTestH2 msg = readNote (  msg) . show
+instance  ShowTestHarness String where
+    -- to avoid the additional "" added when show text
+    showTestH = id
+    readTestH = readNote "showTestHarness String " -- . show
+--    readTestH2 msg = readNote (  msg) . show
 --
 --instance  ShowTestHarness () where
 --    showTestH = show

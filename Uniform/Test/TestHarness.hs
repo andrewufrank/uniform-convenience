@@ -58,7 +58,8 @@ testVar1File  a resfile op = do
 --                    putIOwords ["the text result   \n",   tt1]
 --                    assertEqual result1B tt1
                 testDataDir <- getLitTextTestDir
-                checkResult testvardebug testDataDir resfile tt1
+                r <- runErr $ checkResult testvardebug testDataDir resfile tt1
+                assertBool (r == Right True)
 
 testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b, ShowTestHarness a)
             => FilePath -> FilePath -> (a->   b) -> IO ()
@@ -69,8 +70,9 @@ testFile2File  startfile resfile op = do
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 --    let f1 = removeChar '\n' f0
-    let tt1 =  op    (readTestH $ f0)  -- this is just a conversion to type a
-    checkResult testvardebug testDataDir resfile tt1
+    let tt1 =  op    (readTestH2 "read start sfadsd" $ f0)  -- this is just a conversion to type a
+    r <- runErr $ checkResult testvardebug testDataDir resfile tt1
+    assertBool (r == Right True)
 
 testVar3File :: (Read a, Eq b, Show b, Read b
             , Zeros b, ShowTestHarness a, ShowTestHarness b) =>
@@ -84,7 +86,8 @@ testVar3File  base startfile resfile op = do
     f0 <- readStartFile testvardebug testDataDir startfile
 
     let tt1 =  op base (readTestH2 startfile f0)
-    checkResult testvardebug testDataDir resfile tt1
+    r <- runErr $ checkResult testvardebug testDataDir resfile tt1
+    assertBool (r == Right True)
 
 test3File :: (Read base, Read a, Eq b, Show b, Read b, Zeros b
             , ShowTestHarness base, ShowTestHarness a, ShowTestHarness b) =>
@@ -100,7 +103,8 @@ test3File  basefile startfile resfile op = do
     let base = readTestH2 "test3file readbase wer2" $ base0
 
     let tt1 =  op base (readTestH2 startfile f0)
-    checkResult testvardebug testDataDir resfile tt1
+    r <- runErr $ checkResult testvardebug testDataDir resfile tt1
+    assertBool (r == Right True)
 
 test2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
@@ -113,8 +117,10 @@ test2FileIO   startfile resfile op = do
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 
-    t1 <- runErr $ op   (readTestH2 startfile f0)
-    checkResultIOop testvardebug  testDataDir resfile t1
+    t1 <- runErr $ op    (readTestH2 startfile f0)
+    r <- runErr $ checkResultIOop testvardebug  testDataDir resfile t1
+    assertBool (r == Right True)
+
 --    putIOwords ["test3 testVar2FileIO", "result", showT t1]
 --    case t1 of
 --        Left msg -> do
@@ -127,7 +133,7 @@ test2FileIO   startfile resfile op = do
 --        Right tt1 -> do
 --                checkResult testvardebug testDataDir resfile tt1
 
-testVar2FileIO :: (Read a, Eq b, Show b
+testVar2FileIO :: (Exception String, Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
         base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
@@ -138,8 +144,9 @@ testVar2FileIO  base startfile resfile op = do
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 
-    t1 <-  runErr $ op base (readTestH2 startfile f0)
-    checkResultIOop testvardebug  testDataDir resfile t1
+    t1 <-  runErr $ op base (read f0)
+    r <- runErr $ checkResultIOop testvardebug  testDataDir resfile t1
+    assertBool (r == Right True)
 --    when True $ -- testvardebug $
 --        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
 --    case t1 of

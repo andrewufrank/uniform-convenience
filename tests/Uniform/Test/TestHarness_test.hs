@@ -39,7 +39,7 @@ data A2 = A2 Text Text Int deriving (Eq, Ord, Show, Read)
 
 instance Zeros Abx where zero = Abx zero
 instance ShowTestHarness Abx where
-    showTestH (Abx as) = "Abx " ++ showTestH as
+--    showTestH (Abx as) = "Abx " ++ showTestH as
 
 instance ShowTestHarness A2 where
-    showTestH (A2 t1 t2  i ) = "A2 " ++ showTestH as
+--    showTestH (A2 t1 t2  i ) = "A2 " ++ showTestH as

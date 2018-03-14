@@ -30,6 +30,7 @@ library
         , csv
         , parsec
         , path, path-io
+        , pretty-show
     exposed-modules:
         Uniform.Convenience.StartApp
         Uniform.Convenience.ReadCSV

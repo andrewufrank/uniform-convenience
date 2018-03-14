@@ -89,28 +89,33 @@ checkResult testvardebug testDataDir resfile tt1 = do
         if fnexist   -- issue : how to deal with "" files which do not have a parse?
             then do
                 r0 :: String <- readFile  (toFilePath fn)
-                let r1 = (readTestH2 "checkResult read result file" r0) `asTypeOf` tt1
-                when True $ -- testvardebug $
-                    putIOwords ["test3 checkResult resultFile:", s2t resfile
-                    , "\ninputFile content read\n", showT r1]
+                if null' r0
+                  then  do
+                    writeFile (toFilePath fn )  $ showTestH tt1
+                    assertBool True  -- no control, assume ok
+                  else do
+                    let r1 = (readTestH2 "checkResult read result file" r0) `asTypeOf` tt1
+                    when True $ -- testvardebug $
+                        putIOwords ["test3 checkResult resultFile:", s2t resfile
+                        , "\ninputFile content read\n", showT r1]
 
-                --        let f1cont = readDef zero f1
-                --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
-                --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
-                let testres = r1 == tt1
-                --                unless (testres && testvardebug) $ do
-                when testvardebug  $ do
-                    putIOwords ["checkResult test3a  "
-                            , showT testres, "\n", showT tt1]
-                    putIOwords ["checkResult test3a  expected file"
-                                    , show' fn, "contains\n", showT r1]
-                unless testres $ do
+                    --        let f1cont = readDef zero f1
+                    --        when testvardebug $ putIOwords ["test3a exprected result (raw)", s2t f1]
+                    --        when testvardebug $ putIOwords ["test3a exprected result (content)", show' f1cont]
+                    let testres = r1 == tt1
+                    --                unless (testres && testvardebug) $ do
                     when testvardebug  $ do
-                        putIOwords ["checkResult test4  - no previous file existing"
-                            , " - write NEW result"
+                        putIOwords ["checkResult test3a  "
                                 , showT testres, "\n", showT tt1]
-                    writeFile (toFilePath fnx )  $ showTestH tt1
-                assertBool testres
+                        putIOwords ["checkResult test3a  expected file"
+                                        , show' fn, "contains\n", showT r1]
+                    unless testres $ do
+                        when testvardebug  $ do
+                            putIOwords ["checkResult test4  - no previous file existing"
+                                , " - write NEW result"
+                                    , showT testres, "\n", showT tt1]
+                        writeFile (toFilePath fnx )  $ showTestH tt1
+                    assertBool testres
             else do
                 writeFile (toFilePath fn )  $ showTestH tt1
                 assertBool True  -- no control, assume ok

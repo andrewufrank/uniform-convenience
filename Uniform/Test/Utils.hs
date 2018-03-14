@@ -65,7 +65,7 @@ checkResult testvardebug testDataDir resfile tt1 = do
             putIOwords ["checkResult test", s2t resfile, showT fn]
         fnexist <- doesFileExistWrapped fn
 --        let result = showTestH tt1
-        if fnexist
+        if fnexist   -- issue : how to deal with "" files which do not have a parse?
             then do
                 r0 :: String <- readFile  (toFilePath fn)
                 let r1 = (readTestH2 "checkResult read result file" r0) `asTypeOf` tt1
@@ -104,7 +104,7 @@ checkResult testvardebug testDataDir resfile tt1 = do
 class ShowTestHarness t where
     showTestH :: Show t =>  t -> String
     -- used for the writing to the files
---    showTestH = showTestH
+    showTestH = ppShow
     readTestH :: Read t => String -> t
     -- all reads from file are with readTestH2
     readTestH = readNote "showTestHarness t"

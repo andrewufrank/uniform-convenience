@@ -29,6 +29,8 @@ import Uniform.Zero
 
 test_1   = do
     testFile2File "test.test1" "test.test2" idx
+test_2   = do
+    testFile2File "test.test2" "test.test3" idx
 
 idx :: Abx -> Abx
 idx = const $ Abx $ map (\i -> A2 (showT i) (showT (i+100)) i) [1..10]

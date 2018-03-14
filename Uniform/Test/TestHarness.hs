@@ -35,18 +35,12 @@ module Uniform.Test.TestHarness (module Uniform.Test.TestHarness
 
         )  where
 
---import           "monads-tf" Control.Monad.Error
 import           Safe
 import           Test.Framework
---import           Uniform.Strings hiding ((</>), (<.>), (<|>))
 import Uniform.FileIO
 import Uniform.Error  hiding ((</>), (<.>)) -- to allow export
 import Uniform.Test.Utils
---import qualified Path.IO as Path.IO (getAppUserDataDir)
-        -- necessary for operations in IO
 
---initializeTestDataDir :: ErrIO (Path Abs Dir)
---initializeTestDataDir =   getAppUserDataDir "LitTextTest"
 testvardebug = True -- False
 
 testVar1File :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
@@ -73,10 +67,6 @@ testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b, Show
 testFile2File  startfile resfile op = do
 ----    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
---    let fn0 =  testDataDir   </> startfile :: Path Abs File
---    when testvardebug $ putIOwords ["test2a testFile2File filenames start ", showT fn0
---            , "result file", s2t resfile]
---    f0 :: String <- readFile (toFilePath fn0)
     f0 <- readStartFile testvardebug testDataDir startfile
 --    let f1 = removeChar '\n' f0
     let tt1 =  op    (readTestH $ f0)  -- this is just a conversion to type a
@@ -91,10 +81,6 @@ testVar3File :: (Read a, Eq b, Show b, Read b
 testVar3File  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
---    let fn0 =  testDataDir   </> startfile :: Path Abs File
---    when testvardebug $ putIOwords ["test2a testVar3File filenames start ", showT fn0
---            , "result file", s2t resfile]
---    f0 <- readFile (toFilePath fn0)
     f0 <- readStartFile testvardebug testDataDir startfile
 
     let tt1 =  op base (readTestH2 startfile f0)
@@ -111,14 +97,7 @@ test3File  basefile startfile resfile op = do
     testDataDir <- getLitTextTestDir
     base0 <- readStartFile testvardebug testDataDir basefile
     f0 <- readStartFile testvardebug testDataDir startfile
-
---    let fbase = testDataDir </> basefile :: Path Abs File
---    let fn0 =  testDataDir   </> startfile :: Path Abs File
---    when testvardebug $ putIOwords ["test2a testVar3File filenames start ", showT fn0
---            , "result file", s2t resfile]
---    base0 <- readFile (toFilePath fbase)
     let base = readTestH2 "test3file readbase wer2" $ base0
---    f0 <- readFile (toFilePath fn0)
 
     let tt1 =  op base (readTestH2 startfile f0)
     checkResult testvardebug testDataDir resfile tt1
@@ -133,24 +112,20 @@ test2FileIO   startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
---    let fn0 =  testDataDir   </> startfile :: Path Abs File
---    when True $ -- testvardebug $
---        putIOwords ["test3 testVar2FileIO", "resultFile:", s2t resfile
---                , "inputFile:", showT fn0]
---    f0 <- readFile (toFilePath fn0)
 
     t1 <- runErr $ op   (readTestH2 startfile f0)
-    putIOwords ["test3 testVar2FileIO", "result", showT t1]
-    case t1 of
-        Left msg -> do
---                    when testvardebug $
-                    putIOwords ["test3 Left testVar2FileIO\n"
-                     , "possibly only the resultfile file not existing - create by hand"
-                                , s2t resfile, "\n", showT f0, "\n"
-                                , msg, "."]
---                    assertBool False
-        Right tt1 -> do
-                checkResult testvardebug testDataDir resfile tt1
+    checkResultIOop testvardebug  testDataDir resfile t1
+--    putIOwords ["test3 testVar2FileIO", "result", showT t1]
+--    case t1 of
+--        Left msg -> do
+----                    when testvardebug $
+--                    putIOwords ["test3 Left testVar2FileIO\n"
+--                     , "possibly only the resultfile file not existing - create by hand"
+--                                , s2t resfile, "\n", showT f0, "\n"
+--                                , msg, "."]
+----                    assertBool False
+--        Right tt1 -> do
+--                checkResult testvardebug testDataDir resfile tt1
 
 testVar2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
@@ -162,29 +137,24 @@ testVar2FileIO  base startfile resfile op = do
 --    putIOwords ["read text for ", s2t . show $  textstate0]
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
---    let fn0 =  testDataDir   </> startfile :: Path Abs File
-----    when testvardebug $
---    when True $ -- testvardebug $
---        putIOwords ["test3 testVar3FileIO O", "resultFile:", s2t resfile, "inputFile:", showT fn0]
---    f0 <- readFile (toFilePath fn0)
---    putIOwords ["test3 testVar3FileIO A", "resultFile:", s2t resfile, "inputFile:", showT fn0]
 
     t1 <-  runErr $ op base (readTestH2 startfile f0)
-    when True $ -- testvardebug $
-        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
-    case t1 of
-        Left msg -> do
---                    when testvardebug $
-                    putIOwords ["test3 Left testVar3FileIO\n"
-                     , "resultFile:", s2t resfile, "inputFile:", showT startfile
-                     , "possibly only the resultfile not existing - create by hand"
-                       , "\nMessage:", msg, "."]
---                    assertBool False
-        Right tt1 -> do
-                putIOwords ["test3 testVar3FileIO C check result"]
-                r <- checkResult testvardebug testDataDir resfile tt1
-                putIOwords ["test3 testVar3FileIO C check result gives", showT r ]
-                return r
+    checkResultIOop testvardebug  testDataDir resfile t1
+--    when True $ -- testvardebug $
+--        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
+--    case t1 of
+--        Left msg -> do
+----                    when testvardebug $
+--                    putIOwords ["test3 Left testVar3FileIO\n"
+--                     , "resultFile:", s2t resfile, "inputFile:", showT startfile
+--                     , "possibly only the resultfile not existing - create by hand"
+--                       , "\nMessage:", msg, "."]
+----                    assertBool False
+--        Right tt1 -> do
+--                putIOwords ["test3 testVar3FileIO C check result"]
+--                r <- checkResult testvardebug testDataDir resfile tt1
+--                putIOwords ["test3 testVar3FileIO C check result gives", showT r ]
+--                return r
 
 
 

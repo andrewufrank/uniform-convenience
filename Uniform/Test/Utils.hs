@@ -50,11 +50,32 @@ doesFileExistWrapped :: Path Abs File -> IO Bool
 doesFileExistWrapped fn = Path.IO.doesFileExist (unPath fn)
 
 readStartFile :: Bool -> Path Abs Dir -> FilePath -> IO String
+-- ^ read the start file as string
 readStartFile testvardebug  testDataDir startfile = do
     let fn0 =  testDataDir   </> startfile :: Path Abs File
     when testvardebug $ putIOwords ["test2a testFile2File filename input ", showT fn0]
     f0 :: String <- readFile (toFilePath fn0)
     return f0
+
+checkResultIOop :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
+            => Bool -> Path Abs Dir -> FilePath -> Either Text b -> IO ()
+-- ^ check the result when it may be an error
+checkResultIOop testvardebug  testDataDir resfile t1  = do
+    when True $ -- testvardebug $
+        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
+    case t1 of
+        Left msg -> do
+--                    when testvardebug $
+                    putIOwords ["test3 Left testVar3FileIO\n"
+                     , "resultFile:", s2t resfile
+                     , "possibly only the resultfile not existing - create by hand"
+                       , "\nMessage:", msg, "."]
+--                    assertBool False
+        Right tt1 -> do
+                putIOwords ["test3 testVar3FileIO C check result"]
+                r <- checkResult testvardebug testDataDir resfile tt1
+                putIOwords ["test3 testVar3FileIO C check result gives", showT r ]
+                return r
 
 checkResult :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
             => Bool ->  Path Abs Dir -> FilePath -> b -> IO ()
@@ -116,27 +137,27 @@ class ShowTestHarness t where
 --    showTestH t =   ppShow t
 
 
-instance  ShowTestHarness Text where
-    -- to avoid the additional "" added when show text
-    showTestH = t2s
-    readTestH = readNote "showTestHarness Text" . show
---    readTestH2 msg = readNote (  msg) . show
-
-instance  ShowTestHarness String where
-    -- to avoid the additional "" added when show text
-    showTestH = id
-    readTestH = readNote "showTestHarness String ". show
---    readTestH2 msg = readNote (  msg) . show
-
-instance  ShowTestHarness () where
-    showTestH = show
-    readTestH = readNote "showTestHarness bottom () ". show
---    readTestH2 msg = readNote (  msg) . show
-
-instance ShowTestHarness Int where
-    showTestH = show
-    readTestH = readNote "showTestHarness Int ". show
---    readTestH2 msg = readNote (  msg) . show
+--instance  ShowTestHarness Text where
+--    -- to avoid the additional "" added when show text
+--    showTestH = t2s
+--    readTestH = readNote "showTestHarness Text" -- . show
+----    readTestH2 msg = readNote (  msg) . show
+--
+--instance  ShowTestHarness String where
+--    -- to avoid the additional "" added when show text
+--    showTestH = id
+--    readTestH = readNote "showTestHarness String " -- . show
+----    readTestH2 msg = readNote (  msg) . show
+--
+--instance  ShowTestHarness () where
+--    showTestH = show
+--    readTestH = readNote "showTestHarness bottom () " -- . show
+----    readTestH2 msg = readNote (  msg) . show
+--
+--instance ShowTestHarness Int where
+--    showTestH = show
+--    readTestH = readNote "showTestHarness Int " -- . show
+----    readTestH2 msg = readNote (  msg) . show
 
 --instance  ShowTestHarness t where
 ----    showTestH tx@(a:as)= show tx

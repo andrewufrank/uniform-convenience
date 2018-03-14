@@ -26,21 +26,47 @@ module Uniform.Test.TestHarness_test   where
 import           Test.Framework
 import Uniform.Test.TestHarness
 import Uniform.Zero
+import Uniform.FileIO
+
+test_3   = do
+    testFile2File "test.test1" "test.test2" id3
+test_4   = do
+    testFile2File "test.test2" "test.test3" id4
+
+id3 :: Abx -> Abx
+id3 = const abx1
+
+id4 :: Abx -> Abx
+id4 = id
 
 test_1   = do
-    testFile2File "test.test1" "test.test2" idx
+    testFile2File "test.test1a" "test.test2a" id1
 test_2   = do
-    testFile2File "test.test2" "test.test3" idx
+    testFile2File "test.test2a" "test.test3a" id2
 
-idx :: Abx -> Abx
-idx = const $ Abx $ map (\i -> A2 (showT i) (showT (i+100)) i) [1..10]
+id1 :: Aby -> Aby
+id1 = const aby1
+
+id2 :: Aby -> Aby
+id2 = id
+
+
+abx1 = Abx as
+fnt =   (makeAbsDir "/home/frank/Workspace8")
+as = (map (\i -> A2 (showT i) (showT (i+100)) i) [1..10])
+aby1   = Aby as fnt
 
 data Abx = Abx [A2] deriving (Eq, Ord, Show, Read)
+data Aby = Aby [A2]  (Path Abs Dir)  deriving (Eq, Ord, Show, Read)
 
-data A2 = A2 Text Text Int deriving (Eq, Ord, Show, Read)
+data A2 = A2 Text Text Int
+        deriving (Eq, Ord, Show, Read)
 
 instance Zeros Abx where zero = Abx zero
+instance Zeros Aby where zero = Aby zero fnt
+
 instance ShowTestHarness Abx where
+instance ShowTestHarness Aby where
 --    showTestH (Abx as) = "Abx " ++ showTestH as
 
 instance ShowTestHarness A2 where

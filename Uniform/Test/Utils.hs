@@ -41,6 +41,7 @@ import Text.Show.Pretty
 --import qualified Path  as Path  (Path (..))
 import qualified Path.IO as Path.IO (doesFileExist, getAppUserDataDir)
         -- necessary for operations in IO
+--import Text.Read (readEither)
 
 -- operations are in IO not ErrIO, therefore here and not in fileio
 getLitTextTestDir :: IO (Path Abs Dir)
@@ -96,7 +97,15 @@ checkResult testvardebug testDataDir resfile tt1 = do
                     putIOwords ["checkResult t10 file written", s2t . take 100 $ showTestH tt1]
                     assertBool True  -- no control, assume ok
                   else do
-                    let r1 = (readTestH2 "checkResult read result file" r0) `asTypeOf` tt1
+                    let r1m = (readTestH2 "checkResult read result file" r0) `asTypeOf` (Just tt1)
+                    r1 <- case r1m of
+                        Nothing -> do
+                            putIOwords ["checkResult t11 file does not parse", showT fn]
+                            writeFile (toFilePath fnx )  $ showTestH tt1
+                            putIOwords ["checkResult t10 file written", s2t . take 100 $ showTestH tt1]
+                            assertBool True  -- no control, assume ok
+                            return $ undef "wewer return t11 checkResult"
+                        Just r1 -> return r1
                     when True $ -- testvardebug $
                         putIOwords ["test3 checkResult resultFile:", s2t resfile
                         , "\ninputFile content read\n", showT r1]
@@ -136,8 +145,10 @@ class ShowTestHarness t where
     readTestH :: Read t => String -> t
     -- all reads from file are with readTestH2
     readTestH = readNote "showTestHarness t"
-    readTestH2 :: Read t => String -> String -> t
-    readTestH2 msg = readNote msg
+    readTestH2 :: Read t => String -> String -> Maybe t
+    readTestH2 msg = readMay
+--                readNote msg
+--                either (throwErrorT) id $ readEither ("readTestH2 no parse " <> msg)
 
 --instance (Show t , ShowTestHarness t) => ShowTestHarness [t] where
 --
@@ -172,4 +183,7 @@ instance  ShowTestHarness String where
 ----    showTestH tx@(a:as)= show tx
 ----    showTestH tx = show tx
 
+
+--readEitherError :: Read a => Text -> Text -> Either Text a
+--readEitherError msg t = either (throwErrorT . (msg <>) . s2t) s2t  $ readEither . t2s $ t
 

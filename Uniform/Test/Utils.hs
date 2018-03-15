@@ -114,10 +114,10 @@ checkResult testvardebug testDataDir resfile tt1 = do
                             , show' fn, "contains\n", showT r1]
         unless testres $ do
             when testvardebug  $ do
-                putIOwords ["checkResult test4  - no previous file existing"
+                putIOwords ["checkResult test4 - result different from expected"
                     , " - write NEW result"
                         , showT testres, "\n", showT tt1]
-            writeFile2 ( fnx ) . s2t  $ showTestH tt1
+            writeFile2  fnx  . s2t  $ showTestH tt1
         return testres
     `catchError` (\e -> do
                 let fn = testDataDir </> resfile :: Path Abs File
@@ -126,18 +126,26 @@ checkResult testvardebug testDataDir resfile tt1 = do
                     "e1" -> do  -- file not present
                         putIOwords ["catchError test4  - e1 no previous file existing"]
                         writeFile2 ( fn ) .s2t  $ showTestH tt1
+                        putIOwords ["catchError test4  - file written", showT fn
+                                    , "length ", showT . length . showTestH $ tt1]
                         return True
 
                     "e2" -> do  -- file empty
-                        putIOwords ["catchError test4  - e2 result file empty"]
+                        putIOwords ["catchError test4  - e2 result file empty", showT fn]
                         deleteFile fn
-                        writeFile2 ( fn ) . s2t  $ showTestH tt1
-                        putIOwords ["catchError test4  - file written", showT fn]
+                        putIOwords ["deleted, but not written", showT fn
+                                        , "length ", showT . length . showTestH $ tt1]
+                        writeFile2  fn  . s2t  $ showTestH tt1
+                        putIOwords ["catchError test4  - file written", showT fn
+                                    , "length ", showT . length . showTestH $ tt1]
                         return True
 
                     "e3" -> do  -- file not parsing
-                        putIOwords ["catchError test4  - e3 no parse for result file, wrote xfile"]
-                        writeFile2 ( fnx ) .s2t   $ showTestH tt1
+                        putIOwords ["catchError test4  - e3 no parse for result file, wrote xfile"
+                                , showT fnx]
+                        writeFile2  fnx   .s2t   $ showTestH tt1
+                        putIOwords ["catchError test4  - file written", showT fn
+                                    , "length ", showT . length . showTestH $ tt1]
                         return False
                 return  f
              )

@@ -53,7 +53,7 @@ testVar1File progName  a resfile op = do
     when testvardebug $ putIOwords ["testVar1File read text "
                 , "with expected result ", showT resfile]
     r <- runErr $  testVar1File' progName  a resfile op
-    assertBool (r == Right True)
+    assertEqual (Right True) r
 
 testVar1File' :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
             => Text -> a -> FilePath -> (a-> ErrIO b) -> ErrIO Bool
@@ -74,7 +74,7 @@ testFile2File  progName startfile resfile op = do
     when testvardebug $ putIOwords ["testFile2File read text for "
         , showT startfile, "with expected result ", showT resfile]
     r <- runErr $  testFile2File' progName startfile resfile op
-    assertBool (r == Right True)
+    assertEqual (Right True) r
 
 
 testFile2File' :: (Read a, Eq b, Show b, Read b, Zeros b
@@ -100,7 +100,7 @@ testVar3File progName base startfile resfile op = do
     when testvardebug $ putIOwords ["testVar3File read text for "
         , showT startfile, "with expected result ", showT resfile]
     r <- runErr $ testVar3File' progName base startfile resfile op
-    assertBool (r == Right True)
+    assertEqual (Right True) r
 
 testVar3File' :: (Read a, Eq b, Show b, Read b
             , Zeros b, ShowTestHarness a, ShowTestHarness b) =>
@@ -125,7 +125,7 @@ test3File  progName basefile startfile resfile op = do
     when testvardebug $ putIOwords ["test3File read text for "
         , showT startfile, "with expected result ", showT resfile]
     r <- runErr $ test3File'  progName basefile startfile resfile op
-    assertBool (r == Right True)
+    assertEqual (Right True) r
 
 
 test3File' :: (Read base, Read a, Eq b, Show b, Read b, Zeros b
@@ -153,7 +153,7 @@ test2FileIO :: (Read a, Eq b, Show b
 test2FileIO  progName startfile resfile op = do
     when testvardebug $ putIOwords ["test2FileIO read text for ", s2t startfile]
     r <- runErr $ test2FileIO'  progName startfile resfile op
-    assertBool (r == Right True)
+    assertEqual (Right True) r
 
 
 test2FileIO' :: (Read a, Eq b, Show b
@@ -179,7 +179,7 @@ testVar2FileIO :: (Exception String, Read a, Eq b, Show b
 testVar2FileIO progName base startfile resfile op = do
     when testvardebug $ putIOwords ["testVar2FileIO read text for ", s2t startfile]
     r <- runErr $ testVar2FileIO' progName base startfile resfile op
-    assertBool (r == Right True)
+    assertEqual (Right True) r
 
 
 

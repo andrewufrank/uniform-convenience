@@ -40,8 +40,14 @@ import qualified Path.IO as Path.IO (doesFileExist, getAppUserDataDir)
 import Text.Read
 
 -- operations are in IO not ErrIO, therefore here and not in fileio
-getLitTextTestDir :: IO (Path Abs Dir)
-getLitTextTestDir = fmap Path $ Path.IO.getAppUserDataDir "LitTextTest"
+getLitTextTestDir ::  IO (Path Abs Dir)
+getLitTextTestDir  = fmap Path $ Path.IO.getAppUserDataDir "LitTextTest"
+-- operations are in IO not ErrIO, therefore here and not in fileio
+getLitTextTestDir2 :: Text -> IO (Path Abs Dir)
+getLitTextTestDir2 progName = fmap Path $ Path.IO.getAppUserDataDir . t2s $ progName
+
+getLitTextTestDir3 :: Text -> ErrIO (Path Abs Dir)
+getLitTextTestDir3 progName = fmap Path . callIO . Path.IO.getAppUserDataDir . t2s $ progName
 
 doesFileExistWrapped :: Path Abs File -> IO Bool
 doesFileExistWrapped fn = Path.IO.doesFileExist (unPath fn)
@@ -54,25 +60,33 @@ readStartFile testvardebug  testDataDir startfile = do
     f0 :: String <- readFile (toFilePath fn0)
     return f0
 
-checkResultIOop :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
-            => Bool -> Path Abs Dir -> FilePath -> Either Text b -> ErrIO Bool
--- ^ check the result when it may be an error
-checkResultIOop testvardebug  testDataDir resfile t1  = do
-    when True $ -- testvardebug $
-        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
-    case t1 of
-        Left msg -> do
---                    when testvardebug $
-                    putIOwords ["test3 Left testVar3FileIO\n"
-                     , "resultFile:", s2t resfile
---                     , "possibly only the resultfile not existing - create by hand"
-                       , "\nMessage:", msg, "."]
-                    return False
-        Right tt1 -> do
-                putIOwords ["test3 testVar3FileIO C check result"]
-                r <-  checkResult testvardebug testDataDir resfile tt1
-                putIOwords ["test3 testVar3FileIO C check result gives", showT r ]
-                return  r
+readStartFile3 :: Bool -> Path Abs Dir -> FilePath -> ErrIO String
+-- ^ read the start file as string
+readStartFile3 testvardebug  testDataDir startfile = do
+    let fn0 =  testDataDir   </> startfile :: Path Abs File
+    when testvardebug $ putIOwords ["test2a testFile2File filename input ", showT fn0]
+    f0 :: String <- readFile2 fn0
+    return f0
+
+--checkResultIOop :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
+--            => Bool -> Path Abs Dir -> FilePath ->  b -> ErrIO Bool
+---- ^ check the result when it may be an error
+--checkResultIOop testvardebug  testDataDir resfile tt1  = do
+--    when True $ -- testvardebug $
+--        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
+--    case t1 of
+--        Left msg -> do
+----                    when testvardebug $
+--                    putIOwords ["test3 Left testVar3FileIO\n"
+--                     , "resultFile:", s2t resfile
+----                     , "possibly only the resultfile not existing - create by hand"
+--                       , "\nMessage:", msg, "."]
+--                    return False
+--        Right tt1 -> do
+--                putIOwords ["test3 testVar3FileIO C check result"]
+--                r <-  checkResult testvardebug testDataDir resfile tt1
+--                putIOwords ["test3 testVar3FileIO C check result gives", showT r ]
+--                return  r
 
 checkResult :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
             => Bool ->  Path Abs Dir -> FilePath -> b -> ErrIO Bool

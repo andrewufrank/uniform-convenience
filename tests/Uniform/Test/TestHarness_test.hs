@@ -29,9 +29,10 @@ import Uniform.Zero
 import Uniform.FileIO
 
 test_3   = do
-    testFile2File "test/test.test1" "test/test.test2" id3
+
+    testFile2File prgname "test.test1" "test.test2" id3
 test_4   = do
-    testFile2File "test/test.test2" "test/test.test3" id4
+    testFile2File prgname "test.test2" "test.test3" id4
 
 id3 :: Abx -> Abx
 id3 = const abx1
@@ -40,9 +41,9 @@ id4 :: Abx -> Abx
 id4 = id
 
 test_1   = do
-    testFile2File "test/test.test1a" "test/test.test2a" id1
+    testFile2File prgname "test.test1a" "test.test2a" id1
 test_2   = do
-    testFile2File "test/test.test2a" "test/test.test3a" id2
+    testFile2File prgname "test.test2a" "test.test3a" id2
 
 id1 :: Aby -> Aby
 id1 = const aby1
@@ -50,7 +51,7 @@ id1 = const aby1
 id2 :: Aby -> Aby
 id2 = id
 
-
+prgname = "TestHarness" :: Text
 abx1 = Abx as
 fnt =   (makeAbsDir "/home/frank/Workspace8")
 as = (map (\i -> A2 (showT i) (showT (i+100)) i) [1..10])

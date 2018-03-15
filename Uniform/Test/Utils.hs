@@ -65,7 +65,7 @@ checkResultIOop testvardebug  testDataDir resfile t1  = do
 --                    when testvardebug $
                     putIOwords ["test3 Left testVar3FileIO\n"
                      , "resultFile:", s2t resfile
-                     , "possibly only the resultfile not existing - create by hand"
+--                     , "possibly only the resultfile not existing - create by hand"
                        , "\nMessage:", msg, "."]
                     return False
         Right tt1 -> do
@@ -80,29 +80,14 @@ checkResult testvardebug testDataDir resfile tt1 = do
         let fn = testDataDir </> resfile :: Path Abs File
         let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
         when testvardebug $
-            putIOwords ["checkResult test", s2t resfile, showT fn]
-        fnexist <- doesFileExist' fn
-    --        let result = showTestH tt1
+            putIOwords ["checkResult test", s2t resfile, showT fn, "\n"]
+        fnexist <- fmap not $ doesFileExist' fn
         when fnexist $ throwErrorT ["e1 resultFile does not exist"]
-    --    if fnexist   -- issue : how to deal with "" files which do not have a parse?
-    --        then do
         r0 :: Text  <- readFile2  (toFilePath fn)
-        when (null' r0) $ error "e2 resultFile is empty"
-    --      then  do
-    --        putIOwords ["checkResult t9 file exists but is null", showT fn]
-    --        writeFile (toFilePath fn )  $ showTestH tt1
-    --        putIOwords ["checkResult t10 file written", s2t . take 100 $ showTestH tt1]
-    --        assertBool True  -- no control, assume ok
-    --      else do
-        let r1m =  readTestH2e "e3 no parse " (t2s r0)  `asTypeOf` (Right tt1)
---                :: Either String  b
-        let r1 = either (error . ("e3 result file does not parse" ++)) id r1m
-    --            putIOwords ["checkResult t11 file does not parse", showT fn]
-    --            writeFile (toFilePath fnx )  $ showTestH tt1
-    --            putIOwords ["checkResult t10 file written", s2t . take 100 $ showTestH tt1]
-    --            assertBool True  -- no control, assume ok
-    --            return $ undef "wewer return t11 checkResult"
-    --        Just r1 -> return r1
+        when (null' r0) $ throwErrorT ["e2 resultFile is empty"]
+        let
+            r1m =  readTestH2e "e3 no parse " (t2s r0)  `asTypeOf` (Right tt1)
+        r1 <- either (\m -> throwErrorT ["e3 result file does not parse", s2t m]) return r1m
         when True $ -- testvardebug $
             putIOwords ["test3 checkResult resultFile:", s2t resfile
             , "\ninputFile content read\n", showT r1]
@@ -123,19 +108,22 @@ checkResult testvardebug testDataDir resfile tt1 = do
     `catchError` (\e -> do
                 let fn = testDataDir </> resfile :: Path Abs File
                 let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
-                case (headNote "no error msg" . words' $ e) of
+                f <- case (headNote "no error msg" . words' $ e) of
                     "e1" -> do  -- file not present
+                        putIOwords ["catchError test4  - e1 no previous file existing"]
                         writeFile2 (toFilePath fn ) .s2t  $ showTestH tt1
-                        return ()
+                        return True
 
                     "e2" -> do  -- file empty
+                        putIOwords ["catchError test4  - e2 result file empty"]
                         writeFile2 (toFilePath fn ) . s2t  $ showTestH tt1
-                        return ()
+                        return True
 
                     "e3" -> do  -- file not parsing
+                        putIOwords ["catchError test4  - e3 no parse for result file, wrote xfile"]
                         writeFile2 (toFilePath fnx ) .s2t   $ showTestH tt1
-                        return ()
-                return  False
+                        return False
+                return  f
              )
 
 

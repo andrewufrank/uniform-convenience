@@ -47,7 +47,8 @@ testVar1File :: (Zeros b, Eq b, Show b, Read b, ShowTestHarness b)
             => a -> FilePath -> (a-> ErrIO b) -> IO ()
 -- ^ a text harness for the case that the start is a value (not a file)
 testVar1File  a resfile op = do
-    when testvardebug $ putIOwords ["testVar1File read text for ", s2t resfile]
+    when testvardebug $ putIOwords ["testVar1File read text "
+                , "with expected result ", showT resfile]
     t1 <- runErr $  op a
     case t1 of
         Left msg -> do
@@ -61,18 +62,21 @@ testVar1File  a resfile op = do
                 r <- runErr $ checkResult testvardebug testDataDir resfile tt1
                 assertBool (r == Right True)
 
-testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b, ShowTestHarness b, ShowTestHarness a)
+testFile2File :: (Read a, Eq b, Show b, Read b, Zeros b
+            , ShowTestHarness b, ShowTestHarness a)
             => FilePath -> FilePath -> (a->   b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
 -- test of purecode
 testFile2File  startfile resfile op = do
-----    putIOwords ["read text for ", s2t . show $  textstate0]
+    when testvardebug $ putIOwords ["testFile2File read text for "
+        , showT startfile, "with expected result ", showT resfile]
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 --    let f1 = removeChar '\n' f0
-    let tt1 =  op    (readTestH2 "read start sfadsd" $ f0)  -- this is just a conversion to type a
+    let tt1 =  op    (readTestH2 "read start sfadsd" $ f0)
+        -- this is just a conversion to type a
     r <- runErr $ checkResult testvardebug testDataDir resfile tt1
-    assertBool (r == Right True)
+    assertEqual  (Right True) r
 
 testVar3File :: (Read a, Eq b, Show b, Read b
             , Zeros b, ShowTestHarness a, ShowTestHarness b) =>
@@ -81,13 +85,14 @@ testVar3File :: (Read a, Eq b, Show b, Read b
 -- with a variable as addiational arg for operation
 -- test of purecode
 testVar3File  base startfile resfile op = do
---    putIOwords ["read text for ", s2t . show $  textstate0]
+    when testvardebug $ putIOwords ["testVar3File read text for "
+        , showT startfile, "with expected result ", showT resfile]
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 
     let tt1 =  op base (readTestH2 startfile f0)
     r <- runErr $ checkResult testvardebug testDataDir resfile tt1
-    assertBool (r == Right True)
+    assertEqual  (Right True) r
 
 test3File :: (Read base, Read a, Eq b, Show b, Read b, Zeros b
             , ShowTestHarness base, ShowTestHarness a, ShowTestHarness b) =>
@@ -96,7 +101,8 @@ test3File :: (Read base, Read a, Eq b, Show b, Read b, Zeros b
 -- with a variable as addiational arg for operation
 -- test of purecode
 test3File  basefile startfile resfile op = do
---    putIOwords ["read text for ", s2t . show $  textstate0]
+    when testvardebug $ putIOwords ["test3File read text for "
+        , showT startfile, "with expected result ", showT resfile]
     testDataDir <- getLitTextTestDir
     base0 <- readStartFile testvardebug testDataDir basefile
     f0 <- readStartFile testvardebug testDataDir startfile
@@ -104,7 +110,7 @@ test3File  basefile startfile resfile op = do
 
     let tt1 =  op base (readTestH2 startfile f0)
     r <- runErr $ checkResult testvardebug testDataDir resfile tt1
-    assertBool (r == Right True)
+    assertEqual  (Right True) r
 
 test2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
@@ -113,13 +119,13 @@ test2FileIO :: (Read a, Eq b, Show b
 -- with a variable as addiational arg for operation
 -- test of purecode
 test2FileIO   startfile resfile op = do
-    putIOwords ["read text for ", s2t startfile]
+    when testvardebug $ putIOwords ["test2FileIO read text for ", s2t startfile]
     testDataDir <- getLitTextTestDir
     f0 <- readStartFile testvardebug testDataDir startfile
 
     t1 <- runErr $ op    (readTestH2 startfile f0)
     r <- runErr $ checkResultIOop testvardebug  testDataDir resfile t1
-    assertBool (r == Right True)
+    assertEqual  (Right True) r
 
 --    putIOwords ["test3 testVar2FileIO", "result", showT t1]
 --    case t1 of
@@ -146,7 +152,7 @@ testVar2FileIO  base startfile resfile op = do
 
     t1 <-  runErr $ op base (read f0)
     r <- runErr $ checkResultIOop testvardebug  testDataDir resfile t1
-    assertBool (r == Right True)
+    assertEqual  (Right True) r
 --    when True $ -- testvardebug $
 --        putIOwords ["test3 testVar3FileIO B", "result",  showT t1]
 --    case t1 of

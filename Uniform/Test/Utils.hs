@@ -117,7 +117,7 @@ checkResult testvardebug testDataDir resfile tt1 = do
                 putIOwords ["checkResult test4  - no previous file existing"
                     , " - write NEW result"
                         , showT testres, "\n", showT tt1]
-            writeFile2 (toFilePath fnx ) . s2t  $ showTestH tt1
+            writeFile2 ( fnx ) . s2t  $ showTestH tt1
         return testres
     `catchError` (\e -> do
                 let fn = testDataDir </> resfile :: Path Abs File
@@ -125,17 +125,19 @@ checkResult testvardebug testDataDir resfile tt1 = do
                 f <- case (headNote "no error msg" . words' $ e) of
                     "e1" -> do  -- file not present
                         putIOwords ["catchError test4  - e1 no previous file existing"]
-                        writeFile2 (toFilePath fn ) .s2t  $ showTestH tt1
+                        writeFile2 ( fn ) .s2t  $ showTestH tt1
                         return True
 
                     "e2" -> do  -- file empty
                         putIOwords ["catchError test4  - e2 result file empty"]
-                        writeFile2 (toFilePath fn ) . s2t  $ showTestH tt1
+                        deleteFile fn
+                        writeFile2 ( fn ) . s2t  $ showTestH tt1
+                        putIOwords ["catchError test4  - file written", showT fn]
                         return True
 
                     "e3" -> do  -- file not parsing
                         putIOwords ["catchError test4  - e3 no parse for result file, wrote xfile"]
-                        writeFile2 (toFilePath fnx ) .s2t   $ showTestH tt1
+                        writeFile2 ( fnx ) .s2t   $ showTestH tt1
                         return False
                 return  f
              )

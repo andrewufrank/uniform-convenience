@@ -170,7 +170,7 @@ test2FileIO'  progName startfile resfile op = do
     checkResult testvardebug  testDataDir resfile t1
 
 
-testVar2FileIO :: (Exception String, Read a, Eq b, Show b
+testVar2FileIO :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
         Text -> base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> IO ()
 -- ^ a text harness for the transformation of data in a file to another file
@@ -183,7 +183,7 @@ testVar2FileIO progName base startfile resfile op = do
 
 
 
-testVar2FileIO' :: (Exception String, Read a, Eq b, Show b
+testVar2FileIO' :: (Read a, Eq b, Show b
                     , Read b, Zeros b, ShowTestHarness a, ShowTestHarness b) =>
         Text -> base -> FilePath -> FilePath -> (base -> a-> ErrIO  b) -> ErrIO Bool
 -- ^ a text harness for the transformation of data in a file to another file
@@ -193,7 +193,7 @@ testVar2FileIO' progName base startfile resfile op = do
     testDataDir <- getLitTextTestDir3 progName
     f0 <- readStartFile3 testvardebug testDataDir startfile
 
-    t1 <- op base (read f0)
+    t1 <- op base (readTestH2 "testVar2FileIO" f0)
     checkResult testvardebug  testDataDir resfile t1
 
 

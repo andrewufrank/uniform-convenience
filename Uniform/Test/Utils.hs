@@ -96,6 +96,7 @@ checkResult testvardebug testDataDir resfile tt1 = do
         when testvardebug $
             putIOwords ["checkResult test", s2t resfile, showT fn, "\n"]
         fnexist <- fmap not $ doesFileExist' fn
+        putIOwords ["checkResult doesFileExist'", showT fnexist, "\n"]
         when fnexist $ throwErrorT ["e1 resultFile does not exist"]
         r0 :: Text  <- readFile2  (toFilePath fn)
         when (null' r0) $ throwErrorT ["e2 resultFile is empty"]
@@ -120,34 +121,34 @@ checkResult testvardebug testDataDir resfile tt1 = do
             writeFile2  fnx  . s2t  $ showTestH tt1
         return testres
     `catchError` (\e -> do
-                let fn = testDataDir </> resfile :: Path Abs File
-                let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
-                f <- case (headNote "no error msg" . words' $ e) of
-                    "e1" -> do  -- file not present
-                        putIOwords ["catchError test4  - e1 no previous file existing"]
-                        writeFile2 ( fn ) .s2t  $ showTestH tt1
-                        putIOwords ["catchError test4  - file written", showT fn
-                                    , "length ", showT . length . showTestH $ tt1]
-                        return True
+        let fn = testDataDir </> resfile :: Path Abs File
+        let fnx = testDataDir </> ("x" ++ resfile  ) :: Path Abs File
+        f <- case (headNote "no error msg" . words' $ e) of
+            "e1" -> do  -- file not present
+                putIOwords ["catchError test4  - e1 no previous file existing"]
+                writeFile2 ( fn ) .s2t  $ showTestH tt1
+                putIOwords ["catchError test4  - file written", showT fn
+                            , "length ", showT . length . showTestH $ tt1]
+                return True
 
-                    "e2" -> do  -- file empty
-                        putIOwords ["catchError test4  - e2 result file empty", showT fn]
-                        deleteFile fn
-                        putIOwords ["deleted, but not written", showT fn
-                                        , "length ", showT . length . showTestH $ tt1]
-                        writeFile2  fn  . s2t  $ showTestH tt1
-                        putIOwords ["catchError test4  - file written", showT fn
-                                    , "length ", showT . length . showTestH $ tt1]
-                        return True
+            "e2" -> do  -- file empty
+                putIOwords ["catchError test4  - e2 result file empty", showT fn]
+                deleteFile fn
+                putIOwords ["deleted, but not written", showT fn
+                                , "length ", showT . length . showTestH $ tt1]
+                writeFile2  fn  . s2t  $ showTestH tt1
+                putIOwords ["catchError test4  - file written", showT fn
+                            , "length ", showT . length . showTestH $ tt1]
+                return True
 
-                    "e3" -> do  -- file not parsing
-                        putIOwords ["catchError test4  - e3 no parse for result file, wrote xfile"
-                                , showT fnx]
-                        writeFile2  fnx   .s2t   $ showTestH tt1
-                        putIOwords ["catchError test4  - file written", showT fn
-                                    , "length ", showT . length . showTestH $ tt1]
-                        return False
-                return  f
+            "e3" -> do  -- file not parsing
+                putIOwords ["catchError test4  - e3 no parse for result file, wrote xfile"
+                        , showT fnx]
+                writeFile2  fnx   .s2t   $ showTestH tt1
+                putIOwords ["catchError test4  - file written", showT fn
+                            , "length ", showT . length . showTestH $ tt1]
+                return False
+        return  f
              )
 
 

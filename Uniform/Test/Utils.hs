@@ -56,7 +56,7 @@ readStartFile :: Bool -> Path Abs Dir -> FilePath -> IO String
 -- ^ read the start file as string
 readStartFile testvardebug  testDataDir startfile = do
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test2a testFile2File filename input ", showT fn0]
+    when testvardebug $ putIOwords ["test2a readStartFile filename input ", showT fn0]
     f0 :: String <- readFile (toFilePath fn0)
     return f0
 
@@ -64,7 +64,7 @@ readStartFile3 :: Bool -> Path Abs Dir -> FilePath -> ErrIO String
 -- ^ read the start file as string
 readStartFile3 testvardebug  testDataDir startfile = do
     let fn0 =  testDataDir   </> startfile :: Path Abs File
-    when testvardebug $ putIOwords ["test2a testFile2File filename input ", showT fn0]
+    when testvardebug $ putIOwords ["test2a readStartFile3 filename input ", showT fn0]
     f0 :: String <- readFile2 fn0
     return f0
 

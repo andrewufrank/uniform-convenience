@@ -30,9 +30,9 @@ import Uniform.FileIO
 
 test_3   = do
 
-    testFile2File prgname "test.test1" "test.test2" id3
+    test1File prgname "test.test1" "test.test2" id3
 test_4   = do
-    testFile2File prgname "test.test2" "test.test3" id4
+    test1File prgname "test.test2" "test.test3" id4
 
 id3 :: Abx -> Abx
 id3 = const abx1
@@ -41,9 +41,9 @@ id4 :: Abx -> Abx
 id4 = id
 
 test_1   = do
-    testFile2File prgname "test.test1a" "test.test2a" id1
+    test1File prgname "test.test1a" "test.test2a" id1
 test_2   = do
-    testFile2File prgname "test.test2a" "test.test3a" id2
+    test1File prgname "test.test2a" "test.test3a" id2
 
 id1 :: Aby -> Aby
 id1 = const aby1

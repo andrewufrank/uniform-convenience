@@ -57,14 +57,14 @@ fnt =   (makeAbsDir "/home/frank/Workspace8")
 as = (map (\i -> A2 (showT i) (showT (i+100)) i) [1..10])
 aby1   = Aby as fnt
 
-data Abx = Abx [A2] deriving (Eq, Ord, Show, Read)
-data Aby = Aby [A2]  (Path Abs Dir)  deriving (Eq, Ord, Show, Read)
+data Abx = Abx [A2] deriving (Eq, Ord, Show, Read, Generic, Zeros)
+data Aby = Aby [A2]  (Path Abs Dir)  deriving (Eq, Ord, Show, Read, Generic, Zeros)
 
 data A2 = A2 Text Text Int
-        deriving (Eq, Ord, Show, Read)
+        deriving (Eq, Ord, Show, Read, Generic, Zeros)
 
-instance Zeros Abx where zero = Abx zero
-instance Zeros Aby where zero = Aby zero fnt
+--instance Zeros Abx where zero = Abx zero
+--instance Zeros Aby where zero = Aby zero fnt
 
 instance ShowTestHarness Abx where
 instance ShowTestHarness Aby where

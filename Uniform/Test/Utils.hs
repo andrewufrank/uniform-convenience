@@ -126,7 +126,7 @@ checkResult testvardebug testDataDir resfile tt1 = do
         f <- case (headNote "no error msg" . words' $ e) of
             "e1" -> do  -- file not present
                 putIOwords ["catchError test4  - e1 no previous file existing"]
-                writeFile2 ( fn ) .s2t  $ showTestH tt1
+                writeFileOrCreate2 ( fn ) .s2t  $ showTestH tt1
                 putIOwords ["catchError test4  - file written", showT fn
                             , "length ", showT . length . showTestH $ tt1]
                 return True

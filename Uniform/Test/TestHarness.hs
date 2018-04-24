@@ -37,6 +37,7 @@ module Uniform.Test.TestHarness (module Uniform.Test.TestHarness
     , module Test.Framework
     , ShowTestHarness (..)
     , FilePath
+    , getLitTextTestDir3
 
         )  where
 
